@@ -8,7 +8,6 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.shop.MyResource;
 
 public class MyResourceTest extends JerseyTest {
 
@@ -22,7 +21,7 @@ public class MyResourceTest extends JerseyTest {
      */
     @Test
     public void testGetIt() {
-        final String responseMsg = target().path("myresource").request().get(String.class);
+        final String responseMsg = target().path("myresource/appel").request().get(String.class);
 
         assertEquals("Hello, Heroku!", responseMsg);
     }
