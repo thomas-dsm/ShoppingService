@@ -25,4 +25,25 @@ public class MyResourceTest extends JerseyTest {
 
         assertEquals("Hello, Heroku!", responseMsg);
     }
+    
+    @Test
+    public void testSetDropbd() {
+        final String responseMsg = target().path("myresource/db/drop").request().get(String.class);
+
+        assertEquals("Table Dropped", responseMsg);
+    } 
+    
+    @Test
+    public void testSetItbd() {
+        final String responseMsg = target().path("myresource/db/add").request().get(String.class);
+
+        assertEquals("ajouter a la base!", responseMsg);
+    }
+    
+    @Test
+    public void testGetItbd() {
+        final String responseMsg = target().path("myresource/db").request().get(String.class);
+
+        assertEquals("Hello!\nRead from DB: 9782070541270 Harry Peteur JK Roue Libre 2023-05-06\n", responseMsg);
+    }
 }

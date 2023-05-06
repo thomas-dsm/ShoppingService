@@ -29,7 +29,7 @@ public class MyResource {
         return "Hello, Heroku!";
     }
 
-    @Path("db")    
+    @Path("db")  
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getItbd() {
@@ -43,48 +43,72 @@ public class MyResource {
         return addDatabase();
     }
 
-    private Connection getConnection() throws Exception {
-        // Class.forName("org.postgresql.Driver");
-        URI dbUri = new URI(System.getenv("DATABASE_URL"));
+    @Path("db/drop")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String setDropbd() {
+        return dropTableDataBase();
+    }
+    
+    private String dropTableDataBase(){
+        try {
+            Connection connection = getConnection();
 
-        String username = dbUri.getUserInfo().split(":")[0];
-        String password = dbUri.getUserInfo().split(":")[1];
-        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath();
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate("DROP TABLE IF EXISTS Book");
+        
+            return "Table Dropped";
+            } catch (Exception e) {
+            
+            return "There was an error: " + e.getMessage();
+        }
+    }
+    
+        private Connection getConnection() throws Exception {
+        // Class.forName("org.postgresql.Driver");
+        String dbUrl = "jdbc:postgresql://ec2-34-193-110-25.compute-1.amazonaws.com:5432/d1jltmbva2bnt0";
+        String username = "phvzkuazxuyeoa";
+        String password = "caf84127a1b42ab4cc9c92d1860fd04b610f934efeeefb7a7fd6a4b177731872";
 
         return DriverManager.getConnection(dbUrl, username, password);
     }
-
+    
     private String showDatabase()
     {
         try {
             Connection connection = getConnection();
 
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Book (isbn INT PRIMARY KEY NOT NULL, title VARCHAR, author VARCHAR, date timestamp)");
-            stmt.executeUpdate("INSERT INTO Book VALUES (1L, \"Harry Pot de fleurs\", \"JK roue libre\", now())");
-            ResultSet rs = stmt.executeQuery("SELECT b FROM Book");
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Book (id INT PRIMARY KEY NOT NULL, isbn VARCHAR(13) UNIQUE, title VARCHAR(100), author VARCHAR(100), date DATE)");
+            //stmt.executeUpdate("INSERT INTO Book (id, isbn, title, author, date) VALUES (01, '9782070541270', 'Harry Peteur', 'JK Roue Libre', now())");
+            ResultSet rs = stmt.executeQuery("SELECT isbn, title, author, date FROM Book");
 
             String out = "Hello!\n";
             while (rs.next()) {
-                out += "Read from DB: " + rs.getTimestamp("b") + "\n";
+                out += "Read from DB: " + rs.getString("isbn") + " " + rs.getString("title") + " " + rs.getString("author") + " " + rs.getDate("date") + "\n";
             }
 
             return out;
         } catch (Exception e) {
-          return "There was an error: " + e.getMessage();
+            
+            return "There was an error: " + e.getMessage();
         }
     }
 
     private String addDatabase()
     {
         try {
-          Connection connection = getConnection();
+            Connection connection = getConnection();
+                  
+            Statement stmt = connection.createStatement();
 
-          Statement stmt = connection.createStatement();
-          stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Book (isbn INT PRIMARY KEY NOT NULL, title VARCHAR, author VARCHAR, date timestamp)");
-          stmt.executeUpdate("INSERT INTO Book VALUES (1L, \"Harry Pot de fleurs\", \"JK roue libre\", now())");
-          return "ajouter a la base";
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Book (id INT PRIMARY KEY NOT NULL, isbn VARCHAR UNIQUE, title VARCHAR, author VARCHAR, date timestamp)");
+            stmt.executeUpdate("INSERT INTO Book (id, isbn, title, author, date) VALUES (01, '9782070541270', 'Harry Peteur', 'JK Roue Libre', now())");
+            //stmt.executeUpdate("INSERT INTO Book (id, isbn, title, author, date) VALUES (02, '9782070541271', 'Harry Pot de fleurs', 'JK Roue Libre', now())");            
+            
+            return "ajouter a la base!";
         } catch (Exception e) {
+            
           return "There was an error: " + e.getMessage();
         }
     }
