@@ -14,4 +14,25 @@ ShoppingService :
 
 Appelle le service StockService si `isbn` de `Book` est valide
  
-Lien vers le service : [Lien](https://shopping-service.herokuapp.com/ "Shopping Service")
+Lien vers le service : [Shopping Service](https://shopping-service.herokuapp.com/ "Shopping Service")
+
+
+|Class |Book |
+|--- |--- |
+|int |id |
+|String |isbn |
+|String |title |
+|String |author |
+|Date |date |
+
+|Class |Customer |
+|--- |--- |
+|int |idCustomer |
+|String |name |
+|String |firstname |
+
+|Class |Store |
+|--- |--- |
+|int |idStore |
+|String |account |
+|String |nameStore |

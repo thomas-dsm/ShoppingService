@@ -58,6 +58,7 @@ public class MyResource {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("DROP TABLE IF EXISTS Book");
             stmt.executeUpdate("DROP TABLE IF EXISTS Customer");
+            stmt.executeUpdate("DROP TABLE IF EXISTS Store");
             
             return "Table Dropped";
             } catch (Exception e) {
@@ -101,6 +102,10 @@ public class MyResource {
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Customer (idCustomer INT PRIMARY KEY NOT NULL, name VARCHAR(100), firstname VARCHAR(100))");
             stmt.executeUpdate("INSERT INTO Customer (idCustomer, name, firstname) VALUES (01, 'Da Silva Mendonca', 'Thomas')");
             stmt.executeUpdate("INSERT INTO Customer (idCustomer, name, firstname) VALUES (02, 'Coudour', 'Adrien')");         
+            
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Store (idStore INT PRIMARY KEY NOT NULL, account VARCHAR(100), nameStore VARCHAR(100))");
+            stmt.executeUpdate("INSERT INTO Store (idStore, account, nameStore) VALUES (01, 'a', 'Boutique Nord')");
+            stmt.executeUpdate("INSERT INTO Store (idStore, account, nameStore) VALUES (02, 'a2', 'Boutique Sud')");         
             
             return "ajouter a la base!";
         } catch (Exception e) {
