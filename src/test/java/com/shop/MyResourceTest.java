@@ -1,5 +1,6 @@
 package com.shop;
 
+import java.time.LocalDate;
 import javax.ws.rs.core.Application;
 
 import org.glassfish.jersey.server.ResourceConfig;
@@ -44,6 +45,10 @@ public class MyResourceTest extends JerseyTest {
     public void testGetItbd() {
         final String responseMsg = target().path("myresource/db").request().get(String.class);
 
-        assertEquals("Hello!\nRead from DB: 9782070541270 Harry Peteur JK Roue Libre 2023-05-06\n", responseMsg);
+        String expResult = "Hello!\n" +
+                "Read from DB Book: 9782070541270 Harry Peteur JK Roue Libre 2001-12-05\n" +
+                "Read from DB Book: 9782070541271 Harry Pot de fleurs JK Roue Libre 2002-12-04\n";
+        
+        assertEquals(expResult, responseMsg);
     }
 }
