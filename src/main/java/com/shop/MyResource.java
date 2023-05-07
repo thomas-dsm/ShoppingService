@@ -1,9 +1,7 @@
 package com.shop;
 
 import com.connection.ConnectionManager;
-import java.net.URI;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.ws.rs.GET;

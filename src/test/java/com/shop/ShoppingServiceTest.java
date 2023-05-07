@@ -166,4 +166,66 @@ public class ShoppingServiceTest {
         
         assertEquals(expResult, result);
     }
+
+    /**
+     * Test of getItBook method, of class ShoppingService.
+     */
+    @Test
+    public void testGetItBook() {
+        System.out.println("getItBook");
+
+        String isbn = "9782070541270";
+        String expResult = "Read from DB Book: 9782070541270 Harry Peteur JK Roue Libre 2001-12-05";
+
+        String result = instance.getItBook(isbn);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getItStore method, of class ShoppingService.
+     */
+    @Test
+    public void testGetItStore() {
+        System.out.println("getItStore");
+
+        String account = "a";
+
+        String expResult = "Read from DB Store: a";
+        String result = instance.getItStore(account);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of BookReq method, of class ShoppingService.
+     */
+    @Test
+    public void testBookReq() {
+        System.out.println("BookReq");
+        String account = "a";
+        String isbn = "9782070541270";
+        String from = "Client";
+        String to = "S";
+        String corr = "{account}";
+
+        boolean expResult = true;
+        boolean result = instance.BookReq(account, isbn, from, to, corr);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of BuyReq method, of class ShoppingService.
+     */
+    @Test
+    public void testBuyReq() {
+        System.out.println("BuyReq");
+        String isbn = "9782070541270";
+        String quantity = "2";
+        String from = "Client";
+        String to = "S";
+        String corr = "{a}";
+
+        boolean expResult = true;
+        boolean result = instance.BuyReq(isbn, quantity, from, to, corr);
+        assertEquals(expResult, result);
+    }
 }

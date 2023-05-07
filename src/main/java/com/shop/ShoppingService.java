@@ -6,6 +6,7 @@ package com.shop;
 
 import com.connection.ConnectionManager;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -56,7 +58,92 @@ public class ShoppingService implements ShoppingServiceInterface {
             return "There was an error: " + e.getMessage();
         }
     }
+
+    @Path("book/{isbn}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getItBook (@PathParam("isbn") String isbn) {
+        try {
+            Connection connection = new ConnectionManager().getConnection();
+
+            PreparedStatement pstmt = connection.prepareStatement("SELECT isbn, title, author, date FROM Book WHERE isbn = ? LIMIT 1;");
+            pstmt.setString(1, isbn );
+
+            ResultSet rs = pstmt.executeQuery();
+
+            String out = "";
+            while (rs.next()) {
+                out += "Read from DB Book: " + rs.getString("isbn") + " " + rs.getString("title") + " " + rs.getString("author") + " " + rs.getDate("date");
+            }
+
+            return out;
+        } catch (Exception e) {
+
+            return "There was an error: " + e.getMessage();
+        }
+    }
     
+    @Path("book/{isbn}/quantity/{quantity}/from/{Customer}/to/{Service}/corr/{corr}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public boolean BuyReq(
+            @PathParam("isbn") String isbn,
+            @PathParam("quantity") String quantity,
+            @PathParam("Customer") String from,
+            @PathParam("Service") String to,
+            @PathParam("corr") String corr
+    ) {
+        //TO-DO appel de WholesaleService
+        return true;
+    }
+
+    @Path("store/{account}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getItStore (@PathParam("account") String account) {
+        try {
+            Connection connection = new ConnectionManager().getConnection();
+
+            PreparedStatement pstmt = connection.prepareStatement("SELECT account FROM Store WHERE account = ? LIMIT 1;");
+            pstmt.setString(1, account );
+
+            ResultSet rs = pstmt.executeQuery();
+
+            String out = "";
+            while (rs.next()) {
+                out += "Read from DB Store: " + rs.getString("account");
+            }
+
+            return out;
+        } catch (Exception e) {
+
+            return "There was an error: " + e.getMessage();
+        }
+    }
+
+    @Path("store/{account}/book/{isbn}/from/{Customer}/to/{Service}/corr/{corr}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public boolean BookReq(
+            @PathParam("account") String account,
+            @PathParam("isbn") String isbn,
+            @PathParam("Customer") String from,
+            @PathParam("Service") String to,
+            @PathParam("corr") String corr
+    ) {
+        /*
+        if (getItStore(account).equals("")){
+            return false;
+        }*/
+
+        if (getItBook(isbn).equals("")){
+            return false;
+        }
+
+        //TO-DO appel de StockService
+        return true;
+    }
+
     @Path("customers")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
