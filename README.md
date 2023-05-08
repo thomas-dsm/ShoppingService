@@ -17,22 +17,20 @@ Appelle le service StockService si `isbn` de `Book` est valide
 Lien vers le service : [Shopping Service](https://shopping-service.herokuapp.com/ "Shopping Service")
 
 
-|Class |Book |
-|--- |--- |
-|int |id |
-|String |isbn |
-|String |title |
-|String |author |
-|Date |date |
+|Class  | Book |
+|---    |---    |
+|String | isbn   |
+|String | title  |
+|String | author |
+|Date   | date   |
 
-|Class |Customer |
-|--- |--- |
-|int |idCustomer |
+|Class  |Customer |
+|---    |--- |
+|String |account |
 |String |name |
 |String |firstname |
 
-|Class |Store |
-|--- |--- |
-|int |idStore |
-|String |account |
+|Class  |Store |
+|---    |--- |
+|String |key |
 |String |nameStore |
