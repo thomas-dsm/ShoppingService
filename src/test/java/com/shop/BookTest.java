@@ -4,9 +4,9 @@
  */
 package com.shop;
 
-import java.time.LocalDate;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import javax.ws.rs.core.Application;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,146 +14,61 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author tdasilvamendonca
  */
-public class BookTest {
+public class BookTest extends JerseyTest{
     
-    private static Book instance;
-    private static Book instance2;
-    
-    public BookTest() {
-    }
-    
-    @BeforeAll
-    public static void setUpClass() {
-        instance = new Book(01, "0000000000001","livreTest", "authorTest", LocalDate.now());
-        instance2 = new Book(02, "0000000000002","livreTest2", "authorTest2", LocalDate.now());
+    @Override
+    protected Application configure() {
+        return new ResourceConfig(Book.class);
     }
     
-    @AfterAll
-    public static void tearDownClass() {
-    }
-
     /**
-     * Test of getId method, of class Book.
+     * Test to see that the message "Got it!" is sent in the response.
      */
     @Test
-    public void testGetId() {
-        System.out.println("getId");
+    public void testGetIt() {
+        final String responseMsg = target().path("book/appel").request().get(String.class);
+
+        assertEquals("Hello, Heroku Book!", responseMsg);
+    }
+
+    @Test
+    public void testSetDropbd() {
+        final String responseMsg = target().path("book/db/drop").request().get(String.class);
+
+        assertEquals("Table Book Dropped", responseMsg);
+    } 
+
+    @Test
+    public void testSetItbd() {
+        final String responseMsg = target().path("book/db/add").request().get(String.class);
+
+        assertEquals("ajout de Book a la base!", responseMsg);
+    }
+
+    @Test
+    public void testGetItbd() {
+        final String responseMsg = target().path("book/db").request().get(String.class);
+
+        String expResult = "Hello!\n" +
+                "Read from DB Book: 9782070541270 Harry Peteur JK Roue Libre 2001-12-05\n" +
+                "Read from DB Book: 9782070541271 Harry Pot de fleurs JK Roue Libre 2002-12-04\n";
         
-        int expResult = 1;
-        int result = instance.getId();
-        assertEquals(expResult, result);
+        assertEquals(expResult, responseMsg);
     }
 
-    /**
-     * Test of setId method, of class Book.
-     */
     @Test
-    public void testSetId() {
-        System.out.println("setId");
-        int id = 3;
-
-        instance2.setId(id);
-        int result = instance2.getId();
-        assertEquals(id, result);
-    }
-
-    /**
-     * Test of getIsbn method, of class Book.
-     */
-    @Test
-    public void testGetIsbn() {
-        System.out.println("getIsbn");
+    public void testIsValid() throws Exception {
         
-        String expResult = "0000000000001";
-        String result = instance.getIsbn();
-        assertEquals(expResult, result);
-    }
+        final boolean responseMsg = target().path("book/9782070541270/isvalid").request().get(Boolean.class);
 
-    /**
-     * Test of setIsbn method, of class Book.
-     */
+        assertTrue(responseMsg);
+    }
+    
     @Test
-    public void testSetIsbn() {
-        System.out.println("setIsbn");
-        String isbn = "0000000000003";
+    public void testIsNotValid() throws Exception {
         
-        instance2.setIsbn(isbn);
-        String result = instance2.getIsbn();
-        assertEquals(isbn, result);
-    }
+        final boolean responseMsg = target().path("book/9782070541272/isvalid").request().get(Boolean.class);
 
-    /**
-     * Test of getTitle method, of class Book.
-     */
-    @Test
-    public void testGetTitle() {
-        System.out.println("getTitle");
-        
-        String expResult = "livreTest";
-        String result = instance.getTitle();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setTitle method, of class Book.
-     */
-    @Test
-    public void testSetTitle() {
-        System.out.println("setTitle");
-        String title = "livreTest3";
-
-        instance2.setTitle(title);
-        String result = instance2.getTitle();
-        assertEquals(title, result);
-    }
-
-    /**
-     * Test of getAuthor method, of class Book.
-     */
-    @Test
-    public void testGetAuthor() {
-        System.out.println("getAuthor");
- 
-        String expResult = "authorTest";
-        String result = instance.getAuthor();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setAuthor method, of class Book.
-     */
-    @Test
-    public void testSetAuthor() {
-        System.out.println("setAuthor");
-        String author = "authorTest3";
-
-        instance2.setAuthor(author);
-        String result = instance2.getAuthor();
-        assertEquals(author, result);
-    }
-
-    /**
-     * Test of getDate method, of class Book.
-     */
-    @Test
-    public void testGetDate() {
-        System.out.println("getDate");
-        
-        LocalDate expResult = LocalDate.now();
-        LocalDate result = instance.getDate();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setDate method, of class Book.
-     */
-    @Test
-    public void testSetDate() {
-        System.out.println("setDate");
-        LocalDate date = LocalDate.now();
-
-        instance.setDate(date);
-        LocalDate result = instance.getDate();
-        assertEquals(date, result);
+        assertFalse(responseMsg);
     }
 }

@@ -4,8 +4,9 @@
  */
 package com.shop;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import javax.ws.rs.core.Application;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,97 +14,62 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author tdasilvamendonca
  */
-public class CustomerTest {
+public class CustomerTest extends JerseyTest{
     
-    private static Customer instance;
-    private static Customer instance2;
-
-    public CustomerTest() {
-    }
-    
-    @BeforeAll
-    public static void setUpClass() {
-        instance = new Customer(01,"name1", "fn1");
-        instance2 = new Customer(02,"name2", "fn2");
-
-    }
-    
-    @AfterAll
-    public static void tearDownClass() {
+    @Override
+    protected Application configure() {
+        return new ResourceConfig(Customer.class);
     }
 
     /**
-     * Test of getIdCustomer method, of class Customer.
+     * Test to see that the message "Got it!" is sent in the response.
      */
     @Test
-    public void testGetIdCustomer() {
-        System.out.println("getIdCustomer");
+    public void testGetIt() {
+        final String responseMsg = target().path("customer/appel").request().get(String.class);
 
-        int expResult = 1;
-        int result = instance.getIdCustomer();
-        assertEquals(expResult, result);
+        assertEquals("Hello, Heroku Customer!", responseMsg);
     }
 
-    /**
-     * Test of setIdCustomer method, of class Customer.
-     */
     @Test
-    public void testSetIdCustomer() {
-        System.out.println("setIdCustomer");
-        int idCustomer = 3;
+    public void testSetDropbd() {
+        final String responseMsg = target().path("customer/db/drop").request().get(String.class);
 
-        instance2.setIdCustomer(idCustomer);
-        int result = instance2.getIdCustomer();
-        assertEquals(idCustomer, result);
+        assertEquals("Table Customer Dropped", responseMsg);
+    } 
+
+    @Test
+    public void testSetItbd() {
+        final String responseMsg = target().path("customer/db/add").request().get(String.class);
+
+        assertEquals("ajout de Customer a la base!", responseMsg);
     }
 
-    /**
-     * Test of getName method, of class Customer.
-     */
     @Test
-    public void testGetName() {
-        System.out.println("getName");
+    public void testGetItbd() {
+        final String responseMsg = target().path("customer/db").request().get(String.class);
 
-        String expResult = "name1";
-        String result = instance.getName();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setName method, of class Customer.
-     */
-    @Test
-    public void testSetName() {
-        System.out.println("setName");
-        String name = "name3";
-
-        instance2.setName(name);
-        String result = instance2.getName();
-        assertEquals(name, result);
-    }
-
-    /**
-     * Test of getFirstname method, of class Customer.
-     */
-    @Test
-    public void testGetFirstname() {
-        System.out.println("getFirstname");
-
-        String expResult = "fn1";
-        String result = instance.getFirstname();
-        assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of setFirstname method, of class Customer.
-     */
-    @Test
-    public void testSetFirstname() {
-        System.out.println("setFirstname");
-        String firstname = "fn3";
+        String expResult = "Hello!\n" +
+                "Read from DB Customer: cl1 Da Silva Mendonca Thomas\n" +
+                "Read from DB Customer: cl2 Coudour Adrien\n";
         
-        instance2.setFirstname(firstname);
-        String result = instance2.getFirstname();
-        assertEquals(firstname, result);
+        assertEquals(expResult, responseMsg);
+    }
+
+    
+    @Test
+    public void testIsValid() throws Exception {
+        
+        final boolean responseMsg = target().path("customer/cl1/isvalid").request().get(Boolean.class);
+
+        assertTrue(responseMsg);
+    }
+    
+    @Test
+    public void testIsNotValid() throws Exception {
+        
+        final boolean responseMsg = target().path("customer/cl3/isvalid").request().get(Boolean.class);
+
+        assertFalse(responseMsg);
     }
 }
