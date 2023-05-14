@@ -43,7 +43,7 @@ public class ShoppingService {
                 return Response.status(200).type("text/plain").entity(text).build();
             }
         } catch (BookNotFoundException | CustomerNotFoundException ex) {
-            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
         }
         
@@ -62,11 +62,12 @@ public class ShoppingService {
             Book b = new Book();
             Customer c = new Customer();
             OrderBook order = new OrderBook();
-                        
+
             if(Integer.parseInt(quantity) <= 0){
-                return Response.status(400).type("text/plain").entity("bad quantity").build();
+                String text = "Quantity can't be equals to zero";
+                return Response.status(400).type("text/plain").entity(text).build();
             }
-            
+
             if (b.isValid(isbn) && c.isValid(corr)){
                 
                 //TO-DO appel de WholesaleService ou StockService
@@ -77,7 +78,7 @@ public class ShoppingService {
                 return Response.status(200).type("text/plain").entity(text).build();
             }
         } catch (BookNotFoundException | CustomerNotFoundException ex) {
-            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
         }
         
