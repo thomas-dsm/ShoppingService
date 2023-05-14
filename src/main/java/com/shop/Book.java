@@ -84,6 +84,7 @@ public class Book {
                 out += "Read from DB Book: " + rs.getString("isbn");
             }
 
+            connection.close();
             return out;
         } catch (Exception e) {
             return "There was an error: " + e.getMessage();

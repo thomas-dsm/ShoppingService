@@ -83,6 +83,7 @@ public class Customer {
                 out += "Read from DB Customer: " + rs.getString("account");
             }
 
+            connection.close();
             return out;
         } catch (Exception e) {
             return "There was an error: " + e.getMessage();

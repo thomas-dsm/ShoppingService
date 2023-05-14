@@ -76,10 +76,9 @@ public class ShoppingService {
                 String text = "Command of " + quantity + " Book(s) (" + isbn + ") has been created";
                 return Response.status(200).type("text/plain").entity(text).build();
             }
-        } catch (BookNotFoundException e){
-            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, null, e);
-            return Response.status(404).type("text/plain").entity(e.getMessage()).build();
-            
+        } catch (BookNotFoundException | CustomerNotFoundException ex) {
+            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, null, ex);
+            return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
         }
         
         return null;
