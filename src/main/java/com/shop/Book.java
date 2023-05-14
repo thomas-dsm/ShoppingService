@@ -23,6 +23,13 @@ import javax.ws.rs.core.MediaType;
 @Path("book")
 public class Book {
     
+    private static final String BOOK_TABLE = 
+            "CREATE TABLE IF NOT EXISTS Book ("
+            + "isbn VARCHAR(13) PRIMARY KEY NOT NULL, "
+            + "title VARCHAR(100), "
+            + "author VARCHAR(100), "
+            + "date DATE)";
+    
     @Path("appel")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -54,16 +61,16 @@ public class Book {
     @Path("{isbn}/isvalid")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean isValid(@PathParam("isbn") String isbn) throws BookNotFoundException{
+    public boolean isValid(@PathParam("isbn") String isbn) {
         
-        if(showOneBook(isbn).equals("Read from DB Book: " +isbn)){
-            return true;
+        if(showOneBook(isbn).equals("")){
+            throw new BookNotFoundException("Book with isbn : " + isbn + " doesn't exist");
         }
         
-        return false;
+        return true;
     }
     
-    private String showOneBook(String isbn) throws BookNotFoundException{
+    private String showOneBook(String isbn) {
         try {
             Connection connection = new ConnectionManager().getConnection();
 
@@ -75,10 +82,6 @@ public class Book {
             String out = "";
             while (rs.next()) {
                 out += "Read from DB Book: " + rs.getString("isbn");
-            }
-            
-            if(out.equals("")){
-                throw new BookNotFoundException("Book, " + isbn + ", is not found");
             }
 
             return out;
@@ -92,7 +95,7 @@ public class Book {
             Connection connection = new ConnectionManager().getConnection();
 
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("DROP TABLE IF EXISTS Book");
+            stmt.executeUpdate("DROP TABLE IF EXISTS Book CASCADE");
             
             connection.close();
             return "Table Book Dropped";
@@ -108,7 +111,7 @@ public class Book {
             Connection connection = new ConnectionManager().getConnection();
 
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Book (id INT PRIMARY KEY NOT NULL, isbn VARCHAR(13) UNIQUE, title VARCHAR(100), author VARCHAR(100), date DATE)");
+            stmt.executeUpdate(BOOK_TABLE);
             ResultSet rs = stmt.executeQuery("SELECT isbn, title, author, date FROM Book");
 
             String out = "Hello!\n";
@@ -131,7 +134,7 @@ public class Book {
                   
             Statement stmt = connection.createStatement();
 
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Book (isbn VARCHAR UNIQUE, title VARCHAR, author VARCHAR, date timestamp)");
+            stmt.executeUpdate(BOOK_TABLE);
             stmt.executeUpdate("INSERT INTO Book (isbn, title, author, date) VALUES ('9782070541270', 'Harry Peteur', 'JK Roue Libre', to_date('2001/12/05', 'yyyy/mm/dd'))");
             stmt.executeUpdate("INSERT INTO Book (isbn, title, author, date) VALUES ('9782070541271', 'Harry Pot de fleurs', 'JK Roue Libre', to_date('2002/12/04', 'yyyy/mm/dd'))");         
 

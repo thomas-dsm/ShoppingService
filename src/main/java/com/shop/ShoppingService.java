@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -21,71 +22,66 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("shopping_service")
 public class ShoppingService {
-
-    @Path("customer/{account}/book/{isbn}/from/{Customer}/to/{Service}/corr/{corr}")
+    
+    @Path("book/{isbn}/customer/{account}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean BookReq(
-            @PathParam("account") String account,
+    public Response BookReq(
             @PathParam("isbn") String isbn,
-            @PathParam("Customer") String from,
-            @PathParam("Service") String to,
-            @PathParam("corr") String corr
+            @PathParam("account") String account
     ) {
         try {
             Book b = new Book();
             Customer c = new Customer();
             
-            if (
-                b.isValid(isbn) &&
-                c.isValid(account) && 
-                from.equals("Client") &&
-                to.equals("ShoppingService") &&
-                corr.equals("corr")
-                ){
+            if (b.isValid(isbn) && c.isValid(account)) {
                 
                 //TO-DO appel de StockService
-            
-                return true;
+                int stock = 0;
+                
+                String text = "There are " + stock +" Book(s) : " + isbn;
+                return Response.status(200).type("text/plain").entity(text).build();
             }
-        } catch (CustomerNotFoundException | BookNotFoundException ex) {
+        } catch (BookNotFoundException | CustomerNotFoundException ex) {
             Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, null, ex);
+            return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
         }
         
-        return false;
+        return null;
     }
     
-    @Path("book/{isbn}/quantity/{quantity}/from/{Customer}/to/{Service}/corr/{corr}")
+    @Path("book/{isbn}/quantity/{quantity}/corr/{corr}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean BuyReq(
+    public Response BuyReq(
             @PathParam("isbn") String isbn,
             @PathParam("quantity") String quantity,
-            @PathParam("Customer") String from,
-            @PathParam("Service") String to,
             @PathParam("corr") String corr
     ) {
         try {
             Book b = new Book();
-
-            if (
-                b.isValid(isbn) &&
-                from.equals("Client") &&
-                to.equals("WholeSalerService") &&
-                corr.equals("corr")
-                ){
-            //TO-DO appel de WholesaleService
+            Customer c = new Customer();
+            OrderBook order = new OrderBook();
+                        
+            if(Integer.parseInt(quantity) <= 0){
+                return Response.status(400).type("text/plain").entity("bad quantity").build();
+            }
             
-            return true;
+            if (b.isValid(isbn) && c.isValid(corr)){
+                
+                //TO-DO appel de WholesaleService ou StockService
+
+                order.setItbd(isbn, quantity, corr);
+                
+                String text = "Command of " + quantity + " Book(s) (" + isbn + ") has been created";
+                return Response.status(200).type("text/plain").entity(text).build();
             }
         } catch (BookNotFoundException e){
             Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, null, e);
+            return Response.status(404).type("text/plain").entity(e.getMessage()).build();
+            
         }
         
-        return false;
-    }
-
-    private int GetStockReq(String bn, String from, String to, String corr) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return null;
     }
 }

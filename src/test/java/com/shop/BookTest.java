@@ -5,6 +5,7 @@
 package com.shop;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.jupiter.api.Test;
@@ -59,16 +60,16 @@ public class BookTest extends JerseyTest{
     @Test
     public void testIsValid() throws Exception {
         
-        final boolean responseMsg = target().path("book/9782070541270/isvalid").request().get(Boolean.class);
+        final Response output = target().path("book/9782070541270/isvalid").request().get();
 
-        assertTrue(responseMsg);
+        assertEquals(200, output.getStatus());
     }
     
     @Test
     public void testIsNotValid() throws Exception {
         
-        final boolean responseMsg = target().path("book/9782070541272/isvalid").request().get(Boolean.class);
+        final Response output = target().path("book/9782070541272/isvalid").request().get();
 
-        assertFalse(responseMsg);
+        assertEquals(404, output.getStatus());
     }
 }

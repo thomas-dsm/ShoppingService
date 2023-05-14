@@ -4,13 +4,28 @@
  */
 package com.exception;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+
 /**
  *
  * @author tdasilvamendonca
  */
-public class CustomerNotFoundException extends Exception {
+public class CustomerNotFoundException extends WebApplicationException {
 
     public CustomerNotFoundException(String message) {
-        super(message);
-    }    
+        super(Response.status(404).
+        entity(message).type("text/plain").build());
+    }
+    
+    public CustomerNotFoundException() {
+        super(Response.status(404).
+        entity("Customer not found").type("text/plain").build());
+    }
+    
+    @Override
+    public String getMessage(){
+        
+        return "Customer not found";
+    }
 }

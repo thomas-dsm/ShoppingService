@@ -52,7 +52,7 @@ public class Store {
             Connection connection = new ConnectionManager().getConnection();
 
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("DROP TABLE IF EXISTS Store");
+            stmt.executeUpdate("DROP TABLE IF EXISTS Store CASCADE");
             
             connection.close();
             return "Table Store Dropped";

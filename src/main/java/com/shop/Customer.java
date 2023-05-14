@@ -23,6 +23,12 @@ import javax.ws.rs.core.MediaType;
 @Path("customer")
 public class Customer {
     
+    private static final String CUSTOMER_TABLE = 
+            "CREATE TABLE IF NOT EXISTS Customer ("
+            + "account VARCHAR(3) PRIMARY KEY NOT NULL, "
+            + "name VARCHAR(100), "
+            + "firstname VARCHAR(100))";
+    
     @Path("appel")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -54,16 +60,16 @@ public class Customer {
     @Path("{isbn}/isvalid")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean isValid(@PathParam("isbn") String account) throws CustomerNotFoundException{
+    public boolean isValid(@PathParam("isbn") String account) {
         
-        if(showOneCustomer(account).equals("Read from DB Customer: " + account)){
-            return true;
+        if(showOneCustomer(account).equals("")){
+            throw new CustomerNotFoundException("Customer with account : " + account + " doesn't exist");
         }
         
-        return false;
+        return true;
     }
     
-    private String showOneCustomer(String account) throws CustomerNotFoundException{
+    private String showOneCustomer(String account) {
         try {
             Connection connection = new ConnectionManager().getConnection();
 
@@ -75,10 +81,6 @@ public class Customer {
             String out = "";
             while (rs.next()) {
                 out += "Read from DB Customer: " + rs.getString("account");
-            }
-            
-            if(out.equals("")){
-                throw new CustomerNotFoundException("Customer, " + account + ", is not found");
             }
 
             return out;
@@ -92,7 +94,7 @@ public class Customer {
             Connection connection = new ConnectionManager().getConnection();
 
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("DROP TABLE IF EXISTS Customer");
+            stmt.executeUpdate("DROP TABLE IF EXISTS Customer CASCADE");
             
             connection.close();
             return "Table Customer Dropped";
@@ -108,7 +110,7 @@ public class Customer {
             Connection connection = new ConnectionManager().getConnection();
 
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Customer (account VARCHAR(3) UNIQUE, name VARCHAR(100), firstname VARCHAR(100))");
+            stmt.executeUpdate(CUSTOMER_TABLE);
             ResultSet rs = stmt.executeQuery("SELECT account, name, firstname FROM Customer");
 
             String out = "Hello!\n";
@@ -131,7 +133,7 @@ public class Customer {
                   
             Statement stmt = connection.createStatement();
 
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS Customer (account VARCHAR(3) UNIQUE, name VARCHAR(100), firstname VARCHAR(100))");
+            stmt.executeUpdate(CUSTOMER_TABLE);
             stmt.executeUpdate("INSERT INTO Customer (account, name, firstname) VALUES ('cl1', 'Da Silva Mendonca', 'Thomas')");
             stmt.executeUpdate("INSERT INTO Customer (account, name, firstname) VALUES ('cl2', 'Coudour', 'Adrien')");         
             

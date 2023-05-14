@@ -5,6 +5,7 @@
 package com.shop;
 
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.jupiter.api.Test;
@@ -23,15 +24,50 @@ public class ShoppingServiceTest extends JerseyTest{
     
     @Test
     public void testBookReq() {
-        final boolean responseMsg = target().path("shopping_service/customer/cl1/book/9782070541270/from/Client/to/ShoppingService/corr/corr").request().get(Boolean.class);
+        final Response output = target().path("shopping_service/book/9782070541270/customer/cl1").request().get();
 
-        assertTrue(responseMsg);
+        assertEquals(200, output.getStatus());
+    }
+    
+    @Test
+    public void testBookReqNotFoundBook() {
+        final Response output = target().path("shopping_service/book/9782070541273/customer/cl1").request().get();
+
+        assertEquals(404, output.getStatus());
+    }
+    
+    @Test
+    public void testBookReqNotFoundCustomer() {
+        final Response output = target().path("shopping_service/book/9782070541270/customer/cl3").request().get();
+
+        assertEquals(404, output.getStatus());
     }
 
     @Test
     public void testBuyReq() {
-        final boolean responseMsg = target().path("shopping_service/book/9782070541270/quantity/5/from/Client/to/WholeSalerService/corr/corr").request().get(Boolean.class);
+        final Response output = target().path("shopping_service/book/9782070541270/quantity/5/corr/cl1").request().get();
 
-        assertTrue(responseMsg);
+        assertEquals(200, output.getStatus());
+    }
+    
+    @Test
+    public void testBuyReqNotFoundBook() {
+        final Response output = target().path("shopping_service/book/9782070541273/quantity/5/corr/cl1").request().get();
+
+        assertEquals(404, output.getStatus());
+    }
+    
+    @Test
+    public void testBuyReqNotFoundCustomer() {
+        final Response output = target().path("shopping_service/book/9782070541270/quantity/5/corr/cl3").request().get();
+
+        assertEquals(404, output.getStatus());
+    }
+    
+    @Test
+    public void testBuyReqQuantityZero() {
+        final Response output = target().path("shopping_service/book/9782070541270/quantity/0/corr/cl1").request().get();
+
+        assertEquals(400, output.getStatus());
     }
 }
