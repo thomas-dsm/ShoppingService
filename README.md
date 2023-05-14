@@ -34,3 +34,10 @@ Lien vers le service : [Shopping Service](https://shopping-service.herokuapp.com
 |---    |--- |
 |String |key |
 |String |nameStore |
+
+|Class  |OrderBook |
+|---    |---     |
+|String |isbn    |
+|String |quantity|
+|String |account |
+|Date   | date   |
