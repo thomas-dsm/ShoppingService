@@ -4,8 +4,10 @@
  */
 package com.shop;
 
+import com.connection.CallServiceManager;
 import com.exception.BookNotFoundException;
 import com.exception.CustomerNotFoundException;
+import com.exception.ServiceException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,15 +38,20 @@ public class ShoppingService {
             
             if (b.isValid(isbn) && c.isValid(account)) {
                 
-                //TO-DO appel de StockService
-                int stock = 0;
-                
+                Response response = new CallServiceManager().getResponse("URL_STOCK_SERVICE", "/stock_service/get/book/", isbn);
+
+                String stock = response.readEntity(String.class);
                 String text = "There are " + stock +" Book(s) : " + isbn;
+
                 return Response.status(200).type("text/plain").entity(text).build();
             }
         } catch (BookNotFoundException | CustomerNotFoundException ex) {
             Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
+
+        } catch (ServiceException ex){
+            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage("StockService"), ex);
+            return Response.status(404).type("text/plain").entity(ex.getMessage("StockService")).build();
         }
         
         return null;

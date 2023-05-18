@@ -11,27 +11,22 @@ import javax.ws.rs.core.Response;
  *
  * @author tdasilvamendonca
  */
-public class CustomerNotFoundException extends WebApplicationException {
-
-    public CustomerNotFoundException(String message) {
+public class ServiceException extends WebApplicationException {
+    
+    public ServiceException() {
+        super(Response.status(404).
+        entity("Book invalid").type("text/plain").build());
+    }
+    
+    public ServiceException(String message) {
         super(Response.status(404).
         entity(message).type("text/plain").build());
     }
     
-    public CustomerNotFoundException() {
-        super(Response.status(404).
-        entity("Customer not found").type("text/plain").build());
-    }
-    
-    @Override
-    public String getMessage(){
+    public String getMessage(String service){
         
         Response resp = this.getResponse();
-
-        if (resp.getStatus() == 404){
-            return "Customer not found";
-        }
-
-        return "Error Customer";
+        
+        return "Service " + service + " error : " + resp.getStatus() + "isbn invalid";
     }
 }

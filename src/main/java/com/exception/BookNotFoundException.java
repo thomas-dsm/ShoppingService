@@ -26,6 +26,12 @@ public class BookNotFoundException extends WebApplicationException {
     @Override
     public String getMessage(){
         
-        return "Book not found";
+        Response resp = this.getResponse();
+
+        if (resp.getStatus() == 404){
+            return "Book not found";
+        }
+
+        return "Error Book";
     }
 }
