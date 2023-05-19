@@ -52,7 +52,6 @@ public class OrderBookTest extends JerseyTest{
         String expResult = "Hello!\n" +
                 "Read from DB OrderBook: 9782070541270 4 cl1\n" +
                 "Read from DB OrderBook: 9782070541271 2 cl2\n" +
-                "Read from DB OrderBook: 9782070541270 20 cl1\n" +
                 "Read from DB OrderBook: 9782070541270 5 cl1\n";
         
         assertEquals(expResult, responseMsg);

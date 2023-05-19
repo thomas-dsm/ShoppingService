@@ -58,14 +58,13 @@ public class ShoppingService {
         return null;
     }
     
-    @Path("book/{isbn}/quantity/{quantity}/customer/{account}/stock/{stock}")
+    @Path("book/{isbn}/quantity/{quantity}/customer/{account}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response BuyReq(
             @PathParam("isbn") String isbn,
             @PathParam("quantity") int quantity,
-            @PathParam("account") String account,
-            @PathParam("stock") int stock
+            @PathParam("account") String account
     ) {
         try {
             Book b = new Book();
@@ -78,6 +77,8 @@ public class ShoppingService {
             }
 
             if (b.isValid(isbn) && c.isValid(account)){
+
+                int stock = Integer.parseInt(new CallServiceManager().getResponse("URL_STOCK_SERVICE", "/stock_service/get/book/", isbn).readEntity(String.class));
                 
                 if (stock <= quantity){
                     sendOrderToWholeSalerService(isbn, account, quantity);
@@ -112,6 +113,6 @@ public class ShoppingService {
             j+=1;
         }
 
-        new CallServiceManager().getResponse("URL_STOCK_SERVICE", "/stock_service/remove/book/", isbn + "/" + j*5);
+        new CallServiceManager().getResponse("URL_STOCK_SERVICE", "/stock_service/add/book/", isbn + "/" + j*5);
     }
 }

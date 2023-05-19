@@ -45,35 +45,28 @@ public class ShoppingServiceTest extends JerseyTest{
 
     @Test
     public void testBuyReq() {
-        final Response output = target().path("shopping_service/book/9782070541270/quantity/5/customer/cl1/stock/10").request().get();
-
-        assertEquals(200, output.getStatus());
-    }
-
-    @Test
-    public void testBuyLowStockReq() {
-        final Response output = target().path("shopping_service/book/9782070541270/quantity/20/customer/cl1/stock/5").request().get();
+        final Response output = target().path("shopping_service/book/9782070541270/quantity/5/customer/cl1").request().get();
 
         assertEquals(200, output.getStatus());
     }
 
     @Test
     public void testBuyReqNotFoundBook() {
-        final Response output = target().path("shopping_service/book/9782070541273/quantity/5/customer/cl1/stock/10").request().get();
+        final Response output = target().path("shopping_service/book/9782070541273/quantity/5/customer/cl1").request().get();
 
         assertEquals(404, output.getStatus());
     }
 
     @Test
     public void testBuyReqNotFoundCustomer() {
-        final Response output = target().path("shopping_service/book/9782070541270/quantity/5/customer/cl3/stock/10").request().get();
+        final Response output = target().path("shopping_service/book/9782070541270/quantity/5/customer/cl3").request().get();
 
         assertEquals(404, output.getStatus());
     }
 
     @Test
     public void testBuyReqQuantityZero() {
-        final Response output = target().path("shopping_service/book/9782070541270/quantity/0/customer/cl1/stock/10").request().get();
+        final Response output = target().path("shopping_service/book/9782070541270/quantity/0/customer/cl1").request().get();
 
         assertEquals(400, output.getStatus());
     }
