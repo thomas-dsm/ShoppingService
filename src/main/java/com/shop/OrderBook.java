@@ -58,10 +58,10 @@ public class OrderBook {
     @Produces(MediaType.TEXT_PLAIN)
     public String setItbd(
             @PathParam("isbn") String isbn,
-            @PathParam("quantity") String quantity,
+            @PathParam("quantity") int quantity,
             @PathParam("account") String account
             ) {
-        return addDatabase(isbn, Integer.parseInt(quantity), account);
+        return addDatabase(isbn, quantity, account);
     }
 
     @Path("db/drop")
@@ -134,12 +134,12 @@ public class OrderBook {
         try {
             Connection connection = new ConnectionManager().getConnection();
             
-            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO OrderBook (isbn, quantity, account, date) VALUES (?, ?, ?, ?)");
+            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO OrderBook (isbn, quantity, account, date) VALUES (?, ?, ?, now())");
             pstmt.setString(1, isbn);
             pstmt.setInt(2, quantity);
             pstmt.setString(3, account);
-            pstmt.setDate(4, java.sql.Date.valueOf(java.time.LocalDate.now()));
             
+            pstmt.executeUpdate();
             connection.close();
             return "ajout de OrderBook a la base!";
         } catch (Exception e) {

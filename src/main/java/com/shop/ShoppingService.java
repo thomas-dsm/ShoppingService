@@ -8,6 +8,7 @@ import com.connection.CallServiceManager;
 import com.exception.BookNotFoundException;
 import com.exception.CustomerNotFoundException;
 import com.exception.ServiceException;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,38 +58,60 @@ public class ShoppingService {
         return null;
     }
     
-    @Path("book/{isbn}/quantity/{quantity}/corr/{corr}")
+    @Path("book/{isbn}/quantity/{quantity}/customer/{account}/stock/{stock}")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response BuyReq(
             @PathParam("isbn") String isbn,
-            @PathParam("quantity") String quantity,
-            @PathParam("corr") String corr
+            @PathParam("quantity") int quantity,
+            @PathParam("account") String account,
+            @PathParam("stock") int stock
     ) {
         try {
             Book b = new Book();
             Customer c = new Customer();
             OrderBook order = new OrderBook();
 
-            if(Integer.parseInt(quantity) <= 0){
+            if(quantity <= 0){
                 String text = "Quantity can't be equals to zero";
                 return Response.status(400).type("text/plain").entity(text).build();
             }
 
-            if (b.isValid(isbn) && c.isValid(corr)){
+            if (b.isValid(isbn) && c.isValid(account)){
                 
-                //TO-DO appel de WholesaleService ou StockService
+                if (stock <= quantity){
+                    sendOrderToWholeSalerService(isbn, account, quantity);
+                }
+                
+                new CallServiceManager().getResponse("URL_STOCK_SERVICE", "/stock_service/remove/book/", isbn + "/" + quantity);
 
-                order.setItbd(isbn, quantity, corr);
-                
+                order.setItbd(isbn, quantity, account);
+
                 String text = "Command of " + quantity + " Book(s) (" + isbn + ") has been created";
                 return Response.status(200).type("text/plain").entity(text).build();
             }
-        } catch (BookNotFoundException | CustomerNotFoundException ex) {
+        } catch (BookNotFoundException | CustomerNotFoundException | ServiceException ex) {
             Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
         }
         
         return null;
+    }
+
+    private void sendOrderToWholeSalerService(String isbn, String account, int quantity) throws ServiceException {
+
+        float i = quantity / 5;
+        int j = 0;
+
+        String key = Dotenv.load().get("KEY_STORE");
+
+        String command = key + "/" + isbn + "/5/" + account;
+
+        while (j < i){
+            new CallServiceManager().getResponse("URL_WHOLESALER_SERVICE", "/wholesaler_service/command/", command );
+            j+=1;
+        }
+
+        new CallServiceManager().getResponse("URL_STOCK_SERVICE", "/stock_service/remove/book/", isbn + "/" + j*5);
     }
 }
