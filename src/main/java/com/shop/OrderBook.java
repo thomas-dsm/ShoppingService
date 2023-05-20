@@ -46,6 +46,13 @@ public class OrderBook {
         return showDatabase();
     }
     
+    @Path("db/customer/{account}")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getItbd(@PathParam("account") String account) {
+        return showDatabase(account);
+    }
+
     @Path("db/add")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -70,14 +77,14 @@ public class OrderBook {
     public String setDropbd() {
         return dropTableDataBase();
     }
-    
+
     private String dropTableDataBase(){
         try {
             Connection connection = new ConnectionManager().getConnection();
 
             Statement stmt = connection.createStatement();
             stmt.executeUpdate("DROP TABLE IF EXISTS OrderBook CASCADE");
-            
+
             connection.close();
             return "Table OrderBook Dropped";
             
@@ -104,7 +111,32 @@ public class OrderBook {
             connection.close();
             return out;
         } catch (Exception e) {
-            
+
+            return "There was an error: " + e.getMessage();
+        }
+    }
+    
+    private String showDatabase(String account)
+    {
+        try {
+            Connection connection = new ConnectionManager().getConnection();
+
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(ORDER_BOOK_TABLE);
+            PreparedStatement pstmt = connection.prepareStatement("SELECT isbn, quantity, account FROM OrderBook where account = ?");
+            pstmt.setString(1, account);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            String out = "Customer : " + account +"\n";
+            while (rs.next()) {
+                out += "Read from DB OrderBook: " + rs.getString("isbn") + " " + rs.getString("quantity") + " " + rs.getString("account") + "\n";
+            }
+
+            connection.close();
+            return out;
+        } catch (Exception e) {
+
             return "There was an error: " + e.getMessage();
         }
     }
