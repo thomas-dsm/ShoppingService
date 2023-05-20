@@ -10,8 +10,6 @@ import com.exception.CustomerNotFoundException;
 import com.exception.ServiceException;
 import io.github.cdimascio.dotenv.Dotenv;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -47,11 +45,9 @@ public class ShoppingService {
                 return Response.status(200).type("text/plain").entity(text).build();
             }
         } catch (BookNotFoundException | CustomerNotFoundException ex) {
-            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
 
         } catch (ServiceException ex){
-            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage("StockService"), ex);
             return Response.status(404).type("text/plain").entity(ex.getMessage("StockService")).build();
         }
         
@@ -92,7 +88,6 @@ public class ShoppingService {
                 return Response.status(200).type("text/plain").entity(text).build();
             }
         } catch (BookNotFoundException | CustomerNotFoundException | ServiceException ex) {
-            Logger.getLogger(ShoppingService.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(404).type("text/plain").entity(ex.getMessage()).build();
         }
         
